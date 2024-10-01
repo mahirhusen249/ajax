@@ -10,14 +10,38 @@
 </head>
 <body>
 <nav>
-    <form class="form-inline d-flex d-block me-5" method="GET" action="">
-        <input class="form-control" name="search" type="search" id="search" placeholder="Search"> 
-    </form>
-</nav> 
+    <form class="form-inline d-flex" method="POST" action=""> 
+        <div class="col-lg-4">
+            <input class="form-control" name="search" type="search" id="search" placeholder="Search"> 
+        </div>
+
+        <div class="date-part col-lg-4 border-0" style="margin-left:20%">
+            <div class="col-lg-12">   
+                <div class="form-group"> 
+                    <input type="date" name="start_date" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="col-lg-12">   
+                <div class="form-group" style="margin-left:100%"> 
+                    <input type="submit" name="submit_date" class="btn btn-primary" value="Filter">
+                </div>
+            </div> 
+            
+            <div class="col-lg-12">   
+                <div class="form-group"> 
+                    <input type="date" name="end_date" class="form-control" required>
+                </div>
+            </div>   
+        </div>
+    </form> 
+</nav>
+
 <div class="alldata">
-<div class="m-3">   
-    <a class="btn btn-primary" href="index.php">Add Record</a>
-</div>   
+    <div class="m-3">   
+        <a class="btn btn-primary" href="index.php">Add Record</a>
+    </div>   
+
     <table class="table table-bordered">
         <thead class="thead-light"> 
             <tr>
@@ -33,31 +57,41 @@
             </tr> 
         </thead>
         <tbody id="data">
-            <!-- Initial data will be loaded here -->
             <?php
-            include 'conn.php';
-            $sql = "SELECT * FROM utbl";
+            include 'conn.php';   
+            $sql = "SELECT * FROM utbl";   
+            
+            if(isset($_POST['submit_date'])){   
+                $start_date = $_POST['start_date']; 
+                $end_date = $_POST['end_date'];   
+
+                if($start_date && $end_date){  
+                    $sql = "SELECT * FROM utbl WHERE date BETWEEN '$start_date' AND '$end_date'"; 
+                }  
+            }
+
+       
             $result = mysqli_query($con, $sql);
-            if (mysqli_num_rows($result) > 0) {
+            if (mysqli_num_rows($result) > 0) { 
                 while ($row = mysqli_fetch_array($result)) {
                     echo '<tr>
-                            <td>' . $row["id"] . '</td>
-                            <td>' . $row["fname"] . '</td>
-                            <td>' . $row["lname"] . '</td>
-                            <td>' . $row["mobileno"] . '</td>
-                            <td>' . $row["email"] . '</td>
-                            <td>' . $row["password"] . '</td>
-                            <td>' . $row["gender"] . '</td>
-                            <td>' . $row["date"] . '</td>
+                            <td>' .$row["id"] . '</td>
+                            <td>' .$row["fname"] . '</td>
+                            <td>' .$row["lname"] . '</td>
+                            <td>' .$row["mobileno"] . '</td>
+                            <td>' .$row["email"] . '</td>
+                            <td>' .$row["password"] . '</td>
+                            <td>' .$row["gender"] . '</td>
+                            <td>' .$row["date"] . '</td>
                             <td>
                                 <a class="text-decoration-none" href="delete.php?delete=' . $row["id"] . '"><button type="button" onclick="return checkdelete();" class="btn btn-danger">Delete</button></a>
                                 <a class="text-decoration-none" href="update.php?update=' . $row["id"] . '"><button type="button" class="btn btn-primary">Update</button></a>
                             </td>
-                          </tr>';
+                          </tr>'; 
                 }
             } else {
                 echo "<tr><td colspan='9'>No records found</td></tr>";
-            }
+            } 
             ?>
         </tbody>
     </table>
